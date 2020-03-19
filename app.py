@@ -74,21 +74,6 @@ se = BERTSentenceEncoder(
 # In[ ]:
 
 
-result = se.encode(
-    ["Coffee is good", "The moose is across the street"],
-    as_numpy=False
-)
-result
-
-
-# In[ ]:
-
-
-# for testing
-size_emb = len(result["values"].iloc[0])
-sb.glue("size_emb", size_emb)
-
-
 app = Flask(__name__)
 
 @app.route("/")
@@ -101,10 +86,19 @@ def similarity():
     if sim is None:
         abort(403)
     else:
-        result = get_similarity(sim)
+        result = se.encode(
+            [sim[0], sim[1]],
+            as_numpy=False
+        )
+
+        query_vec_1 = result["values"][0]
+        query_vec_2 = result["values"][1]
+        cosine = np.dot(query_vec_1, query_vec_2) / (np.linalg.norm(query_vec_1) * np.linalg.norm(query_vec_2))
+        value = 1/(1 + math.exp(-100*(cosine - 0.95)))
+
         return jsonify({
             'status': 'OK',
-            'similarity': result,
+            'similarity': value,
         })
         
 if __name__ == '__main__':
