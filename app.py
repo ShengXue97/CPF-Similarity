@@ -59,7 +59,7 @@ module_url = "https://tfhub.dev/google/universal-sentence-encoder/2" #@param ["h
 
 # Import the Universal Sentence Encoder's TF Hub module
 embed = hub.Module(module_url)
-    
+print("Started server")
 @app.route("/")
 def hello():
     return "Welcome to CPF Urgency Prediction Service!"
@@ -73,7 +73,7 @@ def similarity():
     if sentence1 is None or sentence2 is None:
         abort(403)
     else:
-        
+        print("Getting similarity...")
         result = get_similarity(sentence1, sentence2, embed)
         return jsonify({
             'status': 'OK',
