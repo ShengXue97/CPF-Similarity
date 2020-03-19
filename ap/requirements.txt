@@ -1,0 +1,4 @@
+torch==1.4.0
+pandas==0.25.1
+scrapbook==0.2.0
+numpy==1.16.5
