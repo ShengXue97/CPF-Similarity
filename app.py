@@ -24,19 +24,13 @@ from absl import logging
 
 import tensorflow as tf
 import tensorflow_hub as hub
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
 import re
-import seaborn as sns
 from flask import Flask, request, abort, jsonify
 import requests
 
-module_url = "https://tfhub.dev/google/universal-sentence-encoder/2" #@param ["https://tfhub.dev/google/universal-sentence-encoder/2", "https://tfhub.dev/google/universal-sentence-encoder-large/3"]
-
-# Import the Universal Sentence Encoder's TF Hub module
-embed = hub.Module(module_url)
 
 def get_correlation(labels, features, rotation):
   corr = np.inner(features, features)
@@ -47,7 +41,7 @@ def run_and_get_correlation(session_, input_tensor_, messages_, encoding_tensor)
       encoding_tensor, feed_dict={input_tensor_: messages_})
   return get_correlation(messages_, message_embeddings_, 90)
 
-def get_similarity(input1, input2):
+def get_similarity(input1, input2, embed):
   messages = []
   messages.append(input1)
   messages.append(input2)
@@ -68,14 +62,22 @@ def hello():
 
 @app.route("/similarity", methods=["POST"])
 def similarity():
-    sim = request.json.get('sentence1','sentence2', None)
-    if sim is None:
+    module_url = "https://tfhub.dev/google/universal-sentence-encoder/2" #@param ["https://tfhub.dev/google/universal-sentence-encoder/2", "https://tfhub.dev/google/universal-sentence-encoder-large/3"]
+
+    # Import the Universal Sentence Encoder's TF Hub module
+    embed = hub.Module(module_url)
+    
+    sentence1 = request.json.get('sentence1', None)
+    sentence2 = request.json.get('sentence2', None)
+    
+    if sentence1 is None or sentence2 is None:
         abort(403)
     else:
-        result = get_similarity(sim)
+        
+        result = get_similarity(sentence1, sentence2, embed)
         return jsonify({
             'status': 'OK',
-            'similarity': result,
+            'similarity': str(result),
         })
         
 if __name__ == '__main__':
