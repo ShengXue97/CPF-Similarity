@@ -55,17 +55,17 @@ def get_similarity(input1, input2, embed):
                 similarity_message_encodings)
 
 app = Flask(__name__)
+module_url = "https://tfhub.dev/google/universal-sentence-encoder/2" #@param ["https://tfhub.dev/google/universal-sentence-encoder/2", "https://tfhub.dev/google/universal-sentence-encoder-large/3"]
 
+# Import the Universal Sentence Encoder's TF Hub module
+embed = hub.Module(module_url)
+    
 @app.route("/")
 def hello():
     return "Welcome to CPF Urgency Prediction Service!"
 
 @app.route("/similarity", methods=["POST"])
 def similarity():
-    module_url = "https://tfhub.dev/google/universal-sentence-encoder/2" #@param ["https://tfhub.dev/google/universal-sentence-encoder/2", "https://tfhub.dev/google/universal-sentence-encoder-large/3"]
-
-    # Import the Universal Sentence Encoder's TF Hub module
-    embed = hub.Module(module_url)
     
     sentence1 = request.json.get('sentence1', None)
     sentence2 = request.json.get('sentence2', None)
