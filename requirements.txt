@@ -1,6 +1,6 @@
 numpy==1.16.5
 tensorflow==1.14.0
-Flask==1.1.1
+Flask==2.3.2
 tensorflow_hub==0.7.0
 Requests==2.23.0
 pandas==0.25.1
